@@ -3,16 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Flappy Bird - Embedded Game</title>
+  <title>Flappy Bird - Main Menu & Customization</title>
   <style>
-    /* Scope all styles within the outer container to prevent parent CSS leaks */
     .fb-game-wrapper {
       display: flex;
       justify-content: center;
       align-items: center;
       width: 100%;
-      min-height: 100vh;
-      background-color: #1a1a24;
+      background-color: transparent;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
       padding: 20px;
@@ -21,7 +19,6 @@
       -webkit-user-select: none;
     }
 
-    /* Isolated canvas frame block */
     .fb-game-wrapper #game-container {
       position: relative;
       width: 360px;
@@ -29,7 +26,8 @@
       background-color: #70c5ce;
       border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 5px 15px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 5px 15px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s ease;
     }
 
     .fb-game-wrapper canvas {
@@ -67,47 +65,61 @@
       pointer-events: none;
     }
 
-    /* Score Tracker UI */
+    /* Score Tracker HUD */
     .fb-game-wrapper #score-display {
       position: absolute;
       top: 25px;
-      font-size: 52px;
-      font-weight: 900;
-      text-shadow: 3px 3px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;
+      font-size: 48px;
+      font-weight: 700;
+      text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
       z-index: 5;
+      width: 100%;
+      text-align: center;
+      left: 0;
+      display: none;
     }
 
-    /* Screen Typography & Components */
+    /* Screen Elements & Cards */
     .fb-game-wrapper h1 {
-      font-size: 38px;
-      margin: 0 0 10px 0;
+      font-size: 30px;
+      margin: 0 0 5px 0;
       text-shadow: 3px 3px 0 #000;
       letter-spacing: 1px;
     }
 
+    .fb-game-wrapper .subtitle {
+      font-size: 13px;
+      color: #f7d51d;
+      margin-bottom: 15px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
     .fb-game-wrapper p {
-      font-size: 16px;
-      margin: 0 0 25px 0;
+      font-size: 13px;
+      margin: 0 0 12px 0;
       color: #e0e0e0;
       text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
       line-height: 1.4;
     }
 
     .fb-game-wrapper .card {
-      background: rgba(0, 0, 0, 0.65);
+      background: rgba(0, 0, 0, 0.75);
       border-radius: 16px;
-      padding: 25px 20px;
+      padding: 20px;
       width: 85%;
       backdrop-filter: blur(4px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.15);
     }
 
     .fb-game-wrapper .stats-box {
       background: rgba(255, 255, 255, 0.1);
       border-radius: 8px;
-      padding: 12px;
-      margin: 15px 0 20px 0;
+      padding: 10px;
+      margin: 12px 0 15px 0;
       display: flex;
       justify-content: space-around;
     }
@@ -118,26 +130,33 @@
     }
 
     .fb-game-wrapper .stat-label {
-      font-size: 12px;
+      font-size: 11px;
       text-transform: uppercase;
       color: #bbb;
       letter-spacing: 0.5px;
     }
 
     .fb-game-wrapper .stat-value {
-      font-size: 24px;
+      font-size: 22px;
       font-weight: bold;
       color: #f7d51d;
     }
 
+    .fb-game-wrapper .menu-btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      align-items: center;
+    }
+
     .fb-game-wrapper button {
-      background: linear-[#e66e20];
       background-image: linear-gradient(to bottom, #f7a22d, #e66e20);
       border: none;
       border-bottom: 4px solid #b34e0c;
       color: white;
-      padding: 14px 28px;
-      font-size: 18px;
+      padding: 11px 20px;
+      font-size: 15px;
       font-weight: bold;
       border-radius: 30px;
       cursor: pointer;
@@ -145,6 +164,17 @@
       transition: transform 0.1s ease, filter 0.1s ease;
       text-transform: uppercase;
       letter-spacing: 1px;
+      width: 85%;
+    }
+
+    .fb-game-wrapper button.secondary {
+      background-image: linear-gradient(to bottom, #5cb85c, #4cae4c);
+      border-bottom-color: #398439;
+    }
+
+    .fb-game-wrapper button.tertiary {
+      background-image: linear-gradient(to bottom, #337ab7, #285e8e);
+      border-bottom-color: #1d436a;
     }
 
     .fb-game-wrapper button:hover {
@@ -154,6 +184,68 @@
     .fb-game-wrapper button:active {
       transform: translateY(2px);
       border-bottom-width: 2px;
+    }
+
+    /* Selection List Layout (Common for Color & Difficulty) */
+    .fb-game-wrapper .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .fb-game-wrapper .option-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px 15px;
+      border-radius: 30px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .fb-game-wrapper .option-item:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .fb-game-wrapper .option-item.selected {
+      border-color: #f7d51d;
+      background: rgba(247, 213, 29, 0.2);
+    }
+
+    .fb-game-wrapper .option-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .fb-game-wrapper .color-circle {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .fb-game-wrapper .color-circle.yellow { background-color: #f7d51d; }
+    .fb-game-wrapper .color-circle.red { background-color: #e74c3c; }
+    .fb-game-wrapper .color-circle.skyblue { background-color: #3498db; }
+
+    .fb-game-wrapper .option-name {
+      font-size: 15px;
+      font-weight: bold;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .fb-game-wrapper .option-desc {
+      font-size: 11px;
+      color: #ccc;
+      text-align: left;
+      margin: 0;
     }
   </style>
 </head>
@@ -166,12 +258,91 @@
       <!-- Live Score HUD -->
       <div id="score-display">0</div>
 
-      <!-- Start Overlay -->
-      <div id="start-screen" class="ui-layer active">
+      <!-- Main Menu Overlay -->
+      <div id="menu-screen" class="ui-layer active">
         <div class="card">
           <h1>FLAPPY BIRD</h1>
-          <p>Press <strong>Space</strong>, <strong>Click</strong>, or <strong>Tap</strong> to flap wings & clear obstacles.</p>
-          <button id="start-btn">Play Game</button>
+          <div class="subtitle">Arcade Edition</div>
+          <div class="menu-btn-group">
+            <button id="main-play-btn">Start Game</button>
+            <button id="main-difficulty-btn" class="secondary">Difficulty</button>
+            <button id="main-colors-btn" class="tertiary">Bird Color</button>
+            <button id="main-instructions-btn" style="background-image: linear-gradient(to bottom, #9b59b6, #8e44ad); border-bottom-color: #6c3483;">Instructions</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Difficulty Selection Overlay -->
+      <div id="difficulty-screen" class="ui-layer hidden">
+        <div class="card">
+          <h1>DIFFICULTY</h1>
+          <p>Choose your challenge level:</p>
+          <div class="options-list">
+            <div class="option-item selected" data-difficulty="easy">
+              <div class="option-left">
+                <div>
+                  <div class="option-name">Easy</div>
+                  <div class="option-desc">Wide gap & wide distance</div>
+                </div>
+              </div>
+            </div>
+            <div class="option-item" data-difficulty="medium">
+              <div class="option-left">
+                <div>
+                  <div class="option-name">Medium</div>
+                  <div class="option-desc">Standard gap & distance</div>
+                </div>
+              </div>
+            </div>
+            <div class="option-item" data-difficulty="hard">
+              <div class="option-left">
+                <div>
+                  <div class="option-name">Hard</div>
+                  <div class="option-desc">Tight gap & close distance</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button id="back-from-difficulty-btn">Back to Menu</button>
+        </div>
+      </div>
+
+      <!-- Color Selection Overlay -->
+      <div id="colors-screen" class="ui-layer hidden">
+        <div class="card">
+          <h1>CHOOSE COLOR</h1>
+          <p>Select your bird's appearance:</p>
+          <div class="options-list">
+            <div class="option-item selected" data-color="yellow">
+              <div class="option-left">
+                <div class="color-circle yellow"></div>
+                <span class="option-name">Yellow</span>
+              </div>
+            </div>
+            <div class="option-item" data-color="red">
+              <div class="option-left">
+                <div class="color-circle red"></div>
+                <span class="option-name">Red</span>
+              </div>
+            </div>
+            <div class="option-item" data-color="skyblue">
+              <div class="option-left">
+                <div class="color-circle skyblue"></div>
+                <span class="option-name">Sky Blue</span>
+              </div>
+            </div>
+          </div>
+          <button id="back-from-colors-btn">Back to Menu</button>
+        </div>
+      </div>
+
+      <!-- Instructions Overlay -->
+      <div id="instructions-screen" class="ui-layer hidden">
+        <div class="card">
+          <h1>HOW TO PLAY</h1>
+          <p>Tap, click, or press the <strong>Spacebar</strong> to flap your wings and stay airborne.</p>
+          <p>Navigate safely through pipe gaps to score points!</p>
+          <button id="back-to-menu-btn">Back to Menu</button>
         </div>
       </div>
 
@@ -189,7 +360,10 @@
               <span id="best-score" class="stat-value">0</span>
             </div>
           </div>
-          <button id="restart-btn">Try Again</button>
+          <div class="menu-btn-group">
+            <button id="restart-btn">Try Again</button>
+            <button id="menu-btn" class="secondary">Main Menu</button>
+          </div>
         </div>
       </div>
     </div>
@@ -197,49 +371,80 @@
 
   <script>
     (() => {
-      // Configuration & Physics Engine Tuning
-      const CONFIG = {
+      const BASE_CONFIG = {
         width: 360,
         height: 640,
         gravity: 0.38,
         jumpImpulse: -6.8,
         maxVelocityY: 9,
-        pipeSpeed: 2.2,
-        pipeSpawnInterval: 100, // frames
-        pipeGap: 140,
         pipeWidth: 56,
         groundHeight: 80
       };
 
-      // Game States
-      const STATE = { START: 0, PLAYING: 1, GAMEOVER: 2 };
-      let currentState = STATE.START;
+      // Difficulty presets: gap size and spacing interval
+      const DIFFICULTIES = {
+        easy: { pipeGap: 170, pipeSpawnInterval: 120, pipeSpeed: 2.0 },
+        medium: { pipeGap: 140, pipeSpawnInterval: 100, pipeSpeed: 2.2 },
+        hard: { pipeGap: 110, pipeSpawnInterval: 78, pipeSpeed: 2.5 }
+      };
 
-      // Canvas Context Setup
+      let selectedDifficulty = localStorage.getItem('fb_difficulty') || 'medium';
+      let CONFIG = { ...BASE_CONFIG, ...DIFFICULTIES[selectedDifficulty] };
+
+      const STATE = { MENU: 0, DIFFICULTY: 1, COLORS: 2, INSTRUCTIONS: 3, PLAYING: 4, GAMEOVER: 5 };
+      let currentState = STATE.MENU;
+
       const canvas = document.getElementById('gameCanvas');
       const ctx = canvas.getContext('2d');
 
-      // UI Element References
-      const startScreen = document.getElementById('start-screen');
+      const menuScreen = document.getElementById('menu-screen');
+      const difficultyScreen = document.getElementById('difficulty-screen');
+      const colorsScreen = document.getElementById('colors-screen');
+      const instructionsScreen = document.getElementById('instructions-screen');
       const gameOverScreen = document.getElementById('gameover-screen');
       const scoreDisplay = document.getElementById('score-display');
+      
       const finalScoreEl = document.getElementById('final-score');
       const bestScoreEl = document.getElementById('best-score');
-      const startBtn = document.getElementById('start-btn');
-      const restartBtn = document.getElementById('restart-btn');
 
-      // Runtime Variables
+      const mainPlayBtn = document.getElementById('main-play-btn');
+      const mainDifficultyBtn = document.getElementById('main-difficulty-btn');
+      const mainColorsBtn = document.getElementById('main-colors-btn');
+      const mainInstructionsBtn = document.getElementById('main-instructions-btn');
+      const backFromDifficultyBtn = document.getElementById('back-from-difficulty-btn');
+      const backFromColorsBtn = document.getElementById('back-from-colors-btn');
+      const backToMenuBtn = document.getElementById('back-to-menu-btn');
+      const restartBtn = document.getElementById('restart-btn');
+      const menuBtn = document.getElementById('menu-btn');
+
+      const colorItems = document.querySelectorAll('#colors-screen .option-item');
+      const difficultyItems = document.querySelectorAll('#difficulty-screen .option-item');
+
       let frames = 0;
       let score = 0;
       let highScore = parseInt(localStorage.getItem('fb_highscore') || '0', 10);
-      let animationFrameId = null;
+      let selectedBirdColor = localStorage.getItem('fb_birdcolor') || 'yellow';
 
-      // Game Objects
+      // Initialize UI selectors from storage
+      colorItems.forEach(item => {
+        if (item.dataset.color === selectedBirdColor) item.classList.add('selected');
+        else item.classList.remove('selected');
+      });
+
+      difficultyItems.forEach(item => {
+        if (item.dataset.difficulty === selectedDifficulty) item.classList.add('selected');
+        else item.classList.remove('selected');
+      });
+
+      const birdColors = {
+        yellow: { body: '#f7d51d', beak: '#e66e20' },
+        red: { body: '#e74c3c', beak: '#f39c12' },
+        skyblue: { body: '#3498db', beak: '#e67e22' }
+      };
+
       const bird = {
         x: 70,
         y: 280,
-        width: 34,
-        height: 24,
         radius: 14,
         velocity: 0,
         rotation: 0,
@@ -256,12 +461,9 @@
 
         update() {
           this.velocity += CONFIG.gravity;
-          if (this.velocity > CONFIG.maxVelocityY) {
-            this.velocity = CONFIG.maxVelocityY;
-          }
+          if (this.velocity > CONFIG.maxVelocityY) this.velocity = CONFIG.maxVelocityY;
           this.y += this.velocity;
 
-          // Rotation modeling based on velocity
           if (this.velocity < 0) {
             this.rotation = Math.max(-0.4, this.rotation - 0.1);
           } else {
@@ -270,20 +472,22 @@
         },
 
         draw() {
+          const palette = birdColors[selectedBirdColor] || birdColors.yellow;
+
           ctx.save();
           ctx.translate(this.x, this.y);
           ctx.rotate(this.rotation);
 
-          // Body (Yellow Circle)
+          // Body
           ctx.beginPath();
           ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
-          ctx.fillStyle = '#f7d51d';
+          ctx.fillStyle = palette.body;
           ctx.fill();
           ctx.lineWidth = 2;
           ctx.strokeStyle = '#000';
           ctx.stroke();
 
-          // Eye (White/Black)
+          // Eye
           ctx.beginPath();
           ctx.arc(6, -4, 5, 0, Math.PI * 2);
           ctx.fillStyle = '#ffffff';
@@ -295,17 +499,17 @@
           ctx.fillStyle = '#000000';
           ctx.fill();
 
-          // Beak (Orange Triangle)
+          // Beak
           ctx.beginPath();
           ctx.moveTo(8, 2);
           ctx.lineTo(16, 5);
           ctx.lineTo(8, 9);
           ctx.closePath();
-          ctx.fillStyle = '#e66e20';
+          ctx.fillStyle = palette.beak;
           ctx.fill();
           ctx.stroke();
 
-          // Wing (White/Light Yellow)
+          // Wing
           ctx.beginPath();
           ctx.ellipse(-6, 2, 7, 4, 0.2, 0, Math.PI * 2);
           ctx.fillStyle = '#fff';
@@ -324,9 +528,8 @@
         },
 
         spawn() {
-          // Dynamic calculation of safe bounds for pipe gap positions
-          const minTop = 60;
-          const maxTop = CONFIG.height - CONFIG.groundHeight - CONFIG.pipeGap - 60;
+          const minTop = 50;
+          const maxTop = CONFIG.height - CONFIG.groundHeight - CONFIG.pipeGap - 50;
           const topHeight = Math.floor(Math.random() * (maxTop - minTop + 1)) + minTop;
 
           this.items.push({
@@ -338,22 +541,18 @@
         },
 
         update() {
-          if (frames % CONFIG.pipeSpawnInterval === 0) {
-            this.spawn();
-          }
+          if (frames % CONFIG.pipeSpawnInterval === 0) this.spawn();
 
           for (let i = 0; i < this.items.length; i++) {
             let p = this.items[i];
             p.x -= CONFIG.pipeSpeed;
 
-            // Score check
             if (!p.passed && p.x + CONFIG.pipeWidth < bird.x) {
               p.passed = true;
               score++;
               scoreDisplay.innerText = score;
             }
 
-            // Remove off-screen pipes
             if (p.x + CONFIG.pipeWidth < 0) {
               this.items.splice(i, 1);
               i--;
@@ -363,25 +562,20 @@
 
         draw() {
           for (let p of this.items) {
-            // Render Pipe Gradient/Color Setup
             ctx.fillStyle = '#73bf2e';
             ctx.strokeStyle = '#000000';
             ctx.lineWidth = 2;
 
-            // --- Top Pipe Body ---
+            // Top Pipe
             ctx.fillRect(p.x, 0, CONFIG.pipeWidth, p.top);
             ctx.strokeRect(p.x, 0, CONFIG.pipeWidth, p.top);
-
-            // Top Pipe Cap
             ctx.fillRect(p.x - 3, p.top - 20, CONFIG.pipeWidth + 6, 20);
             ctx.strokeRect(p.x - 3, p.top - 20, CONFIG.pipeWidth + 6, 20);
 
-            // --- Bottom Pipe Body ---
+            // Bottom Pipe
             const bottomY = CONFIG.height - CONFIG.groundHeight - p.bottom;
             ctx.fillRect(p.x, bottomY, CONFIG.pipeWidth, p.bottom);
             ctx.strokeRect(p.x, bottomY, CONFIG.pipeWidth, p.bottom);
-
-            // Bottom Pipe Cap
             ctx.fillRect(p.x - 3, bottomY, CONFIG.pipeWidth + 6, 20);
             ctx.strokeRect(p.x - 3, bottomY, CONFIG.pipeWidth + 6, 20);
           }
@@ -397,10 +591,7 @@
         groundOffset: 0,
 
         update() {
-          // Scroll ground texture in synced loop
           this.groundOffset = (this.groundOffset + CONFIG.pipeSpeed) % 20;
-          
-          // Scroll clouds gently
           for (let cloud of this.clouds) {
             cloud.x -= 0.5;
             if (cloud.x < -60) cloud.x = CONFIG.width + 60;
@@ -408,11 +599,9 @@
         },
 
         draw() {
-          // 1. City Skyline Backing
           ctx.fillStyle = '#4ec0ca';
           ctx.fillRect(0, 0, CONFIG.width, CONFIG.height);
 
-          // Render Vector Clouds
           ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
           for (let cloud of this.clouds) {
             ctx.beginPath();
@@ -422,20 +611,13 @@
             ctx.fill();
           }
 
-          // Distant Building Shapes
-          ctx.fillStyle = '#9ce6b9';
-          ctx.fillRect(0, CONFIG.height - CONFIG.groundHeight - 40, CONFIG.width, 40);
-
-          // 2. Foreground Ground
           const groundY = CONFIG.height - CONFIG.groundHeight;
           ctx.fillStyle = '#ded895';
           ctx.fillRect(0, groundY, CONFIG.width, CONFIG.groundHeight);
 
-          // Top Grass Stripe
           ctx.fillStyle = '#73bf2e';
           ctx.fillRect(0, groundY, CONFIG.width, 14);
 
-          // Ground Separator Border Line
           ctx.beginPath();
           ctx.moveTo(0, groundY);
           ctx.lineTo(CONFIG.width, groundY);
@@ -443,7 +625,6 @@
           ctx.strokeStyle = '#000';
           ctx.stroke();
 
-          // Ground Pattern Lines
           ctx.strokeStyle = '#cbb86b';
           ctx.lineWidth = 3;
           for (let x = -this.groundOffset; x < CONFIG.width; x += 20) {
@@ -455,144 +636,130 @@
         }
       };
 
-      // Collision Detection Engine
       function checkCollisions() {
-        // Floor & Ceiling Boundaries
         const groundTop = CONFIG.height - CONFIG.groundHeight;
-        if (bird.y + bird.radius >= groundTop) {
-          bird.y = groundTop - bird.radius;
-          return true;
-        }
-        if (bird.y - bird.radius <= 0) {
-          return true;
-        }
+        if (bird.y + bird.radius >= groundTop) return true;
+        if (bird.y - bird.radius <= 0) return true;
 
-        // Pipe Collisions (Bounding Box against Circle center)
         for (let p of pipes.items) {
-          const topPipeBottom = p.top;
           const bottomPipeTop = CONFIG.height - CONFIG.groundHeight - p.bottom;
-
-          // Check if bird is within pipe's X-span
           if (bird.x + bird.radius > p.x && bird.x - bird.radius < p.x + CONFIG.pipeWidth) {
-            // Check collision with top pipe or bottom pipe
-            if (bird.y - bird.radius < topPipeBottom || bird.y + bird.radius > bottomPipeTop) {
-              return true;
-            }
+            if (bird.y - bird.radius < p.top || bird.y + bird.radius > bottomPipeTop) return true;
           }
         }
         return false;
       }
 
-      // Action Handlers
       function handleAction(e) {
-        if (e) {
-          // Prevent scroll defaults on action triggers
-          if (e.type === 'keydown' && e.code !== 'Space') return;
-          if (e.cancelable) e.preventDefault();
-        }
-
-        if (currentState === STATE.START) {
-          setGameState(STATE.PLAYING);
-          bird.flap();
-        } else if (currentState === STATE.PLAYING) {
+        if (currentState === STATE.PLAYING) {
+          if (e) {
+            if (e.type === 'keydown' && e.code !== 'Space') return;
+            if (e.cancelable) e.preventDefault();
+          }
           bird.flap();
         }
       }
 
       function setGameState(newState) {
         currentState = newState;
+        
+        menuScreen.classList.replace('active', 'hidden');
+        difficultyScreen.classList.replace('active', 'hidden');
+        colorsScreen.classList.replace('active', 'hidden');
+        instructionsScreen.classList.replace('active', 'hidden');
+        gameOverScreen.classList.replace('active', 'hidden');
+        scoreDisplay.style.display = 'none';
 
-        if (newState === STATE.START) {
+        if (newState === STATE.MENU) {
+          menuScreen.classList.replace('hidden', 'active');
+          bird.reset();
+          pipes.reset();
+        } else if (newState === STATE.DIFFICULTY) {
+          difficultyScreen.classList.replace('hidden', 'active');
+        } else if (newState === STATE.COLORS) {
+          colorsScreen.classList.replace('hidden', 'active');
+        } else if (newState === STATE.INSTRUCTIONS) {
+          instructionsScreen.classList.replace('hidden', 'active');
+        } else if (newState === STATE.PLAYING) {
+          scoreDisplay.style.display = 'block';
           bird.reset();
           pipes.reset();
           score = 0;
           scoreDisplay.innerText = score;
-          scoreDisplay.style.display = 'none';
-          startScreen.classList.remove('hidden');
-          startScreen.classList.add('active');
-          gameOverScreen.classList.remove('active');
-          gameOverScreen.classList.add('hidden');
-        } 
-        else if (newState === STATE.PLAYING) {
-          startScreen.classList.remove('active');
-          startScreen.classList.add('hidden');
-          gameOverScreen.classList.remove('active');
-          gameOverScreen.classList.add('hidden');
-          scoreDisplay.style.display = 'block';
-        } 
-        else if (newState === STATE.GAMEOVER) {
+          bird.flap();
+        } else if (newState === STATE.GAMEOVER) {
           if (score > highScore) {
             highScore = score;
             localStorage.setItem('fb_highscore', highScore.toString());
           }
           finalScoreEl.innerText = score;
           bestScoreEl.innerText = highScore;
-
-          scoreDisplay.style.display = 'none';
-          gameOverScreen.classList.remove('hidden');
-          gameOverScreen.classList.add('active');
+          gameOverScreen.classList.replace('hidden', 'active');
         }
       }
 
-      // Central Game Loop
       function loop() {
         frames++;
-
-        // Render Background
         environment.update();
         environment.draw();
 
         if (currentState === STATE.PLAYING) {
           pipes.update();
           bird.update();
-
-          if (checkCollisions()) {
-            setGameState(STATE.GAMEOVER);
-          }
+          if (checkCollisions()) setGameState(STATE.GAMEOVER);
+        } else {
+          bird.y = 280 + Math.sin(frames * 0.05) * 8;
+          bird.rotation = 0;
         }
 
-        // Always render entities
         pipes.draw();
         bird.draw();
-
-        animationFrameId = requestAnimationFrame(loop);
+        requestAnimationFrame(loop);
       }
 
-      // Global Input Listeners
       const gameContainer = document.getElementById('game-container');
 
-      window.addEventListener('keydown', (e) => {
-        if (e.code === 'Space') handleAction(e);
+      window.addEventListener('keydown', (e) => { if (e.code === 'Space') handleAction(e); });
+      gameContainer.addEventListener('mousedown', (e) => { if (e.button === 0) handleAction(e); });
+      gameContainer.addEventListener('touchstart', (e) => { handleAction(e); }, { passive: false });
+
+      // Button Navigation Listeners
+      mainPlayBtn.addEventListener('click', (e) => { e.stopPropagation(); setGameState(STATE.PLAYING); });
+      mainDifficultyBtn.addEventListener('click', (e) => { e.stopPropagation(); setGameState(STATE.DIFFICULTY); });
+      mainColorsBtn.addEventListener('click', (e) => { e.stopPropagation(); setGameState(STATE.COLORS); });
+      mainInstructionsBtn.addEventListener('click', (e) => { e.stopPropagation(); setGameState(STATE.INSTRUCTIONS); });
+      backFromDifficultyBtn.addEventListener('click', (e) => { e.stopPropagation(); setGameState(STATE.MENU); });
+      backFromColorsBtn.addEventListener('click', (e) => { e.stopPropagation(); setGameState(STATE.MENU); });
+      backToMenuBtn.addEventListener('click', (e) => { e.stopPropagation(); setGameState(STATE.MENU); });
+      restartBtn.addEventListener('click', (e) => { e.stopPropagation(); setGameState(STATE.PLAYING); });
+      menuBtn.addEventListener('click', (e) => { e.stopPropagation(); setGameState(STATE.MENU); });
+
+      // Difficulty Selection Handlers
+      difficultyItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectedDifficulty = item.dataset.difficulty;
+          localStorage.setItem('fb_difficulty', selectedDifficulty);
+          CONFIG = { ...BASE_CONFIG, ...DIFFICULTIES[selectedDifficulty] };
+
+          difficultyItems.forEach(i => i.classList.remove('selected'));
+          item.classList.add('selected');
+        });
       });
 
-      // Mouse & Touch events bound explicitly to active container scope
-      gameContainer.addEventListener('mousedown', (e) => {
-        if (e.button === 0) handleAction(e);
+      // Color Selection Handlers
+      colorItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectedBirdColor = item.dataset.color;
+          localStorage.setItem('fb_birdcolor', selectedBirdColor);
+
+          colorItems.forEach(i => i.classList.remove('selected'));
+          item.classList.add('selected');
+        });
       });
 
-      gameContainer.addEventListener('touchstart', (e) => {
-        handleAction(e);
-      }, { passive: false });
-
-      // Button Click Bindings
-      startBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        setGameState(STATE.PLAYING);
-        bird.flap();
-      });
-
-      restartBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        bird.reset();
-        pipes.reset();
-        score = 0;
-        scoreDisplay.innerText = score;
-        setGameState(STATE.PLAYING);
-        bird.flap();
-      });
-
-      // Initialize
-      setGameState(STATE.START);
+      setGameState(STATE.MENU);
       loop();
     })();
   </script>
